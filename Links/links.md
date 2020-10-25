@@ -1,4 +1,4 @@
-# -materiale preparativo
+# -useful links
 
 https://astro-pi.org/media/Astro_Pi_Mission_Space_Lab_Guidelines_2020_21.pdf
 
@@ -8,7 +8,7 @@ https://www.offthemap.travel/news/understanding-whale-migration/
 
 https://nationalzoo.si.edu/migratory-birds/migratory-birds-tracking-map
 
-# -migrazioni e campi magnetici
+# -migrations and magnetic fields
 https://www.sciencealert.com/solar-storms-could-be-confusing-whale-navigation
 https://www.australiangeographic.com.au/topics/science-environment/2014/05/animal-magnetism-how-animals-use-earths-magnetic-field/
 https://www.deq.virginia.gov/Portals/0/DEQ/CoastalZoneManagement/FundsInitiativesProjects/task94-01-16b.pdf
