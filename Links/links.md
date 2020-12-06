@@ -1,22 +1,17 @@
 # -useful links
-https://www.flickr.com/photos/raspberrypi/
-
-https://projects.raspberrypi.org/en/projects/code-for-your-astro-pi-mission-space-lab-experiment
-
-https://astro-pi.org/media/Astro_Pi_Mission_Space_Lab_Guidelines_2020_21.pdf
-
-https://github.com/FrancescoGiraud0/WOODProject.git
-
-https://www.offthemap.travel/news/understanding-whale-migration/
-
-https://nationalzoo.si.edu/migratory-birds/migratory-birds-tracking-map
+- https://www.flickr.com/photos/raspberrypi/
+- https://projects.raspberrypi.org/en/projects/code-for-your-astro-pi-mission-space-lab-experiment
+- https://astro-pi.org/media/Astro_Pi_Mission_Space_Lab_Guidelines_2020_21.pdf
+- https://github.com/FrancescoGiraud0/WOODProject.git
+- https://www.offthemap.travel/news/understanding-whale-migration/
+- https://nationalzoo.si.edu/migratory-birds/migratory-birds-tracking-map
 
 # -migrations and magnetic fields
-https://www.sciencealert.com/solar-storms-could-be-confusing-whale-navigation
-https://www.australiangeographic.com.au/topics/science-environment/2014/05/animal-magnetism-how-animals-use-earths-magnetic-field/
-https://www.deq.virginia.gov/Portals/0/DEQ/CoastalZoneManagement/FundsInitiativesProjects/task94-01-16b.pdf
-https://www.nationalgeographic.com/animals/2020/02/solar-storms-gray-whale-strandings-magnetic-sense/
-https://www.smithsonianmag.com/smart-news/solar-storms-might-throw-migrating-whales-course-180974278/
+- https://www.sciencealert.com/solar-storms-could-be-confusing-whale-navigation
+- https://www.australiangeographic.com.au/topics/science-environment/2014/05/animal-magnetism-how-animals-use-earths-magnetic-field/
+- https://www.deq.virginia.gov/Portals/0/DEQ/CoastalZoneManagement/FundsInitiativesProjects/task94-01-16b.pdf
+- https://www.nationalgeographic.com/animals/2020/02/solar-storms-gray-whale-strandings-magnetic-sense/
+- https://www.smithsonianmag.com/smart-news/solar-storms-might-throw-migrating-whales-course-180974278/
 
 # machine learning
 
