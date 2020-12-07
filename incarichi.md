@@ -1,0 +1,23 @@
+# Assegnazione Incarichi
+
+## Maffi:
+- [ ] NDVI filter: to copy
+
+## Fenoglio:
+- [ ] ISS position: to copy
+- [ ] magnetometer: to copy
+- [ ] rewrite the magnetometer module:
+
+## Masia:
+- [ ] confrontare rotte migratorie: 
+- [ ] accellerometro:
+- [ ] rewrite the accellerometer module:
+
+## Tomatis:
+- [ ] pi camera: to copy
+- [ ] rewrite the picamera module:
+- [ ] day-night: to copy
+
+
+## Everybody:
+- [ ] save data into logger file: to copy
