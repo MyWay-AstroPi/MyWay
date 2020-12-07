@@ -1,4 +1,6 @@
 # -useful links
+- https://publiclab.org/wiki/ndvi
+- https://opensource.org/licenses/MIT
 - https://www.flickr.com/photos/raspberrypi/
 - https://projects.raspberrypi.org/en/projects/code-for-your-astro-pi-mission-space-lab-experiment
 - https://astro-pi.org/media/Astro_Pi_Mission_Space_Lab_Guidelines_2020_21.pdf
