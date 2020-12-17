@@ -1,4 +1,6 @@
 # -useful links
+- https://docs.python.org/3/howto/functional.html
+- https://github.com/FrancescoGiraud0/WOODProject/blob/master/functions/Test_AVG_gray.py
 - https://publiclab.org/wiki/ndvi
 - https://opensource.org/licenses/MIT
 - https://www.flickr.com/photos/raspberrypi/
