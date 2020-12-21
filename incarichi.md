@@ -1,26 +1,25 @@
 # Assegnazione Incarichi
 
 ## Maffi:
-- [ ] NDVI filter: to copy
+- [ ] NDVI filter X
 
 ## Fenoglio:
-- [ ] ISS position: to copy  X
-- [ ] magnetometer: to copy
-- [ ] rewrite the magnetometer module:
+- [X] ISS position: to copy 
+- [ ] magnetometer: to copy X
+- [ ] rewrite the magnetometer module X
 
 ## Masia:
-- [ ] confrontare rotte migratorie:  X 
-- [ ] accellerometro:
-- [ ] rewrite the accellerometer module:
+- [X] confrontare rotte migratorie *fixare coordinate e aggiungere balene
+- [ ] accellerometro X
+- [ ] rewrite the accellerometer module X
 
 ## Tomatis:
-- [ ] pi camera: to copy
-- [ ] rewrite the picamera module:
-- [ ] day-night: to copy X
-
+- [ ] pi camera: to copy X
+- [ ] rewrite the picamera module X
+- [X] day-night: to copy 
 
 ## Everybody:
 - [ ] save data into logger file: to copy
 
 
-*X.deadline = 20/12/2020
+*X.deadline = 05/01/2021
