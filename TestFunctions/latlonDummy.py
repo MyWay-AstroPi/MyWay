@@ -17,5 +17,8 @@ def get_latlon_Dummy():
         
 cords = get_latlon_Dummy()
 while True:
+    try:
 	lat, lon = next(cords)
 	data_logger.info('%f %f %f %f %f %f',lat[0],lat[1],lat[2],lon[0],lon[1],lon[2])
+    except StopIteration:
+	break
