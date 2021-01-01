@@ -18,7 +18,6 @@
 - [X] day-night: to copy 
 
 ## Everybody:
-- [ ] save data into logger file: to copy
 - [ ] write the complite algortitm
 
-*X.deadline = 05/01/2021
+*X.deadline = 04/01/2021
