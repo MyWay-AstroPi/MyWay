@@ -1,5 +1,7 @@
 import cv2 as cv
 import numpy as np
+import os
+
 
 '''
 def BGR_to_GRAY(bgr_list):
@@ -46,13 +48,20 @@ def captureDummy():
     for i in range(1,10):
         path = "C:\\Users\\andre\\Desktop\\astropi\\picamera\\foto\\" + str(i) + ".jpg"
         img = cv.imread(path)
+	
         #average_value,_ = avg_center(img)
         #average_value = BGR_to_GRAY(average_value)  
         yield img #average_value
 
+
+dir_path = os.path.dirname(os.path.realpath(__file__)) # Path of this python file
 capture = captureDummy()
+photo_counter = 0
 while True:
 	try:
-		print(next(capture))
+	    photo_counter += 1
+	    img = next(capture)
+	    file_name = dir_path + "/img_" + str(photo_counter).zfill(3) + ".jpg"
+	    cv.imwrite(file_name, img)
 	except StopIteration:
-		break
+	    break
