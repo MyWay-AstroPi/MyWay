@@ -25,9 +25,9 @@ def contrastStretch(im):
 
 def calculateNDVI(image):
     b, _, r = cv2.split(image) #Extraction of bgr valuer (ignore the g value)
-    bottom = float(r) + float(b)
+    bottom = r + b
     bottom[bottom == 0] = 0.0000000000001 #Change 0s in bottom array (exclude the division by 0)
-    ndvi = (float(r) - b) / bottom #Calculate NDVI value of each pixel
+    ndvi = (r - b) / bottom #Calculate NDVI value of each pixel
 
     ndvi = contrastStretch(ndvi) #???
     ndvi = ndvi.astype(numpy.uint8) #Conversion to numpy array
