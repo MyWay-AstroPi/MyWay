@@ -10,14 +10,14 @@ def get_compass_raw_Dummy():
         x = values[0]
         y = values[1]
         x = values[2]
-        yield x,y,z
+        yield {'x' : x, 'y' : y, 'z' : z}
         
         
         
 magnetometer_values = get_compass_raw_Dummy()
 while True:
     try:
-	mag_x, mag_y, mag_z = next(magnetometer_values) 
-	data_logger.info('%s , %s , %s', round(mag_x, 4), round(mag_y, 4), round(mag_z, 4))
+	mag = next(magnetometer_values) 
+	data_logger.info('%f , %f , %f', round(mag['x'], 4), round(mag['y'], 4), round(mag['z'], 4))
     except StopIteration:
 	break
