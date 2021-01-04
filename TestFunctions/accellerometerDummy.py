@@ -10,5 +10,6 @@ acc = get_accellerometerDummy()
 while True:
   try:
     result = next(acc)
+    data_logger.info('%f %f %f',result['x'],result['y'],result['z'])
   except StopIteration:
     break
