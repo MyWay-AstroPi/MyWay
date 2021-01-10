@@ -139,6 +139,10 @@ def run():
 			cv.imwrite(file_name,ndvi)
 			ndvi = calculate_statistics(ndvi)
 			
+			#take magnetometer values
+			#take accellerometer values
+			
+			
 		except StopIteration:
 			break
 
