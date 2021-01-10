@@ -5,6 +5,10 @@ import datetime
 import cv2 as cv
 import numpy as np
 
+
+DIFF_THRESHOLD = 0.3
+PIXEL_THRESHOLD = 0.6
+
 dir_path = os.path.dirname(os.path.realpath(__file__)) # Path of this python file
 
 # Set a custom formatter for information log
@@ -31,13 +35,57 @@ def get_latlon_Dummy():
         yield  lat_value, long_value
         
         
-DIFF_THRESHOLD = 0.3
-PIXEL_THRESHOLD = 0.6
 
 
-'''
-UNKNOWN FUNCTION
-'''
+def is_day(img, size_percentage=30, min_threshold=80):
+    '''
+    Function that return true if in the center size percentage of the photo
+    (converted to gray color scale) the average color value is more bright 
+    than min_threshold (so, more simply, if it's day).
+    '''
+
+    # Get image size
+    height, width, _ = img.shape
+
+    # Calculate center coordinate
+    centerX = (width // 2 )
+    centerY = (height // 2)
+
+    # Calculate RightBorder 
+    XRB = centerX + ((width * size_percentage) // 200)                    
+    # Calculate LeftBorder
+    XLB = centerX - ((width * size_percentage) // 200)
+    # Calculate TopBorder
+    YTB = centerY + ((height * size_percentage) // 200)
+    # Calculate BottomBorder
+    YBB = centerY - ((height * size_percentage) // 200)
+
+    bgr_list = []
+
+    # Creation of a list of BGR values for every pixel
+    for x in range(XLB,XRB):
+        for y in range(YBB,YTB):
+            bgr_list.append(img[y,x]) # Append the BGR value to the list
+
+    # Convert bgr_list in a numpy array
+    numpy_bgr_array = np.array(bgr_list)
+    # Calculate the average value of blue, green and red
+    average_value = np.average(numpy_bgr_array,axis=0)
+
+    # Convert the type of datas
+    average_value = average_value.astype(int)
+
+    # Map values in uint8 format type
+    average_value = np.uint8([[[average_value[0],average_value[1],average_value[2]]]]) 
+
+    # Convert the color from BGR to Grayscale
+    gray_avg_value = cv.cvtColor(average_value, cv.COLOR_BGR2GRAY)
+    #remove single-dimensional entries from the shape of the numpy array
+    gray_avg_value = np.squeeze(gray_avg_value)
+
+    # Return True if the gray_avg value
+    return gray_avg_value >= min_threshold
+    
 def contrastStretch(im):
     in_min = np.percentile(im, 5)
     in_max = np.percentile(im, 100)
@@ -96,6 +144,8 @@ def calculate_statistics(ndviArray, pixelThreshold = PIXEL_THRESHOLD, diffThresh
     return NDVIGrad
 
 
+    
+
 def find_file_name():
 	names = open("names.txt",'r')
 	for line in names:
@@ -106,11 +156,28 @@ def captureDummy():
     path = ""
     file_names = find_file_name()
     while True:
-        path = "C:\\Users\\andre\\Desktop\\astropi\\picamera\\foto\\" + next(file_names)[:-1] 
+        path = dir_path + "\\foto\\" + next(file_names)[:-1]
         img = cv.imread(path)        
         yield img
 
 
+
+def get_compass_raw_Dummy():
+    ReadData = open("dataMagnet.txt", "r").readlines()
+    for elem in ReadData:
+        values = elem.split(',')
+        x = values[0]
+        y = values[1]
+        z = values[2]
+        yield {'x' : x, 'y' : y, 'z' : z}
+        
+          
+def get_accellerometerDummy():
+    data = open("dataAccellerometer.txt", "r").readlines()
+    #Accelerometer x y z raw data in Gs
+    for line in data:
+        line = line.split(',')
+        yield {"x": line[0], "y": line[1], "z": line[2]}
 
 
 def run():
@@ -120,28 +187,44 @@ def run():
 	photo_counter = 1
 	
 	info_logger.info('Starting the expertiment')
+	data_logger.info('photo_counter, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, diff, lat[0], lat[1], lat[2], lon[0], lon[1], lon[2], magX, magY, magZ, accX, accY, accZ')
 	
 	cords = get_latlon_Dummy()
 	capture = captureDummy()
+	magnetometer_values = get_compass_raw_Dummy()
+	accellerometer_values = get_accellerometerDummy()
+	
 	while now_time < start_time + datetime.timedelta(minutes = 178):
 		try:
 			
 			#get latitude, longitude
 			lat,lon = next(cords)
-			data_logger.info('%f, %f, %f, %f, %f, %f', lat[0], lat[1], lat[2], lon[0], lon[1], lon[2])
 			
+			
+			#get magnetometer values
+			mag = next(magnetometer_values) 
+						
+			#get accellerometer values
+			acc = next(accellerometer_values)
 			
 			#take pictures and apply the ndvi filter
-			photo_counter += 1
 			img = next(capture)
-			ndvi = calculateNDVI(img)
-			file_name = dir_path + "/foto_ndvi/img_" + str(photo_counter).zfill(3) + ".jpg"
-			cv.imwrite(file_name,ndvi)
-			ndvi = calculate_statistics(ndvi)
+			takepic = is_day(img)
 			
-			#take magnetometer values
-			#take accellerometer values
+			if takepic:
+				ndvi = calculateNDVI(img)
+				file_name = dir_path + "/foto_ndvi/img_" + str(photo_counter).zfill(3) + ".jpg"
+				cv.imwrite(file_name,ndvi)
+				ndvi_stats = calculate_statistics(ndvi)
+				info_logger.info('Saved photos: %s', photo_counter)
+				data_logger.info('%s, %s, %f, %f, %f, %f, %f, %f, %s , %s , %s, %s, %s, %s', photo_counter, ','.join([str(round(v, 4)) for v in ndvi_stats.values()]), lat[0], lat[1], lat[2], lon[0], lon[1], lon[2], mag['x'], mag['y'], mag['z'][:-1],acc['x'],acc['y'],acc['z'])
+				
+				photo_counter += 1
 			
+			else:
+				data_logger.info('%s, -,-,-,-,-,-,-,-,-,-, %f, %f, %f, %f, %f, %f, %s , %s , %s, %s, %s, %s', '-1', lat[0], lat[1], lat[2], lon[0], lon[1], lon[2], mag['x'], mag['y'], mag['z'][:-1],acc['x'],acc['y'],acc['z'])
+			
+			now_time = datetime.datetime.now()
 			
 		except StopIteration:
 			break
