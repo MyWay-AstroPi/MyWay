@@ -245,7 +245,7 @@ def run():
         try:
             
             pos = get_latlon()
-			location = rg.search(pos)
+	    location = rg.search(pos)
 
             # Take a pic
             cam.capture(rawCapture, format='bgr')
@@ -257,20 +257,20 @@ def run():
 
             # Check if it's day
             take_pic = is_day(image, size_percentage=SIZE_PERCENTAGE, min_threshold=MIN_GREY_COLOR_VALUE)
-			if takepic:
-				for city in location:
-					takepic = takepic or isInCamera(pos,(float(city['lat']),float(city['lon'])))
+	    if takepic:
+		for city in location:
+			takepic = takepic or isInCamera(pos,(float(city['lat']),float(city['lon'])))
 
             if takepic:
-				ndvi = calculateNDVI(img)
+		ndvi = calculateNDVI(img)
                 ndvi_stats = calculate_statistics(ndvi)
                 cv.imwrite(file_name,ndvi)
-				file_name = dir_path + "/foto_ndvi/img_" + str(photo_counter).zfill(3) + ".jpg"
-				info_logger.info('Saved photos: %s', photo_counter)
-				data_logger.info('%s, %s, %f, %f, %s, %s, %s, %s, %s, %s', photo_counter, ','.join([str(round(v, 4)) for v in ndvi_stats.values()]), pos[0],pos[1], mag['x'], mag['y'], mag['z'][:-1],acc['x'],acc['y'],acc['z'])
-				photo_counter += 1
+		file_name = dir_path + "/foto_ndvi/img_" + str(photo_counter).zfill(3) + ".jpg"
+		info_logger.info('Saved photos: %s', photo_counter)
+		data_logger.info('%s, %s, %f, %f, %s, %s, %s, %s, %s, %s', photo_counter, ','.join([str(round(v, 4)) for v in ndvi_stats.values()]), pos[0],pos[1], mag['x'], mag['y'], mag['z'][:-1],acc['x'],acc['y'],acc['z'])
+		photo_counter += 1
             else:
-				data_logger.info('-1, -,-,-,-,-,-,-,-,-,-, %f, %f, %s, %s, %s, %s, %s, %s',pos[0], pos[1] mag['x'], mag['y'], mag['z'][:-1],acc['x'],acc['y'],acc['z'])
+		data_logger.info('-1, -,-,-,-,-,-,-,-,-,-, %f, %f, %s, %s, %s, %s, %s, %s',pos[0], pos[1] mag['x'], mag['y'], mag['z'][:-1],acc['x'],acc['y'],acc['z'])
 			
             # It is necessary to take the next pic
             rawCapture.truncate(0)
