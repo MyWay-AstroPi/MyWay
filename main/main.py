@@ -1,27 +1,4 @@
-'''
-Woods Orbit Observer and Deforestation Sensor Project
-by WOOD Mission Team
-Github: https://github.com/FrancescoGiraud0/WOODProject
 
-Python 3 algorithm that run for about 3 hours with the porpuse to
-take near infrared (NIR) pictures of the Earth, record some data like
-latitude, longitude and magnetometer values and try to get some information
-about vegetation, in particular we would try to measure the anthropogenic
-impact by using a ML algorithm.
-We use an unsupervisioned algorithm on board because we didn't have any pictures
-of Earth taked by NoIR Camera + blue filter that permitted us to train a supervisioned
-algorithm on it.
-This algorithm have the function calculateNDVI() that computes the NDVI (Normalized
-Difference Vegetation Index) of every pixels of each photo taken.
-The NDVI permits to assessing whether or not the target being observed contains
-live green vegetation.
-The function calculate_statistics() generates a dictionary by counting the
-number (in percentage) of pixels for every NDVI value mapped from 0.0 to 1.0 and 
-a 'diff' value that is a counter (in percentage) of low vegetation pixels near
-every pixels with high vegetation (NDVI value >= 0.7).
-When the algorithm saved at least 50 photos, the dictionaries will be analized by
-KMeans clustering algorithm.
-'''
 
 # MODULES
 # -------------------------------
@@ -36,7 +13,8 @@ from time import sleep
 import os
 import cv2 as cv
 import numpy as np
-from math import degrees
+import math
+import reverse_geocoder as rg
 # -------------------------------
 
 # SETUP
@@ -51,11 +29,13 @@ SIZE_PERCENTAGE = 30            # Percentage area of the picture starting from t
 MIN_GREY_COLOR_VALUE = 70       # Minimun color value to save the photo
 ML_MIN_N_OF_SAMPLES = 50        # Minimun pictures number to start the machine learning algorithm
 CYCLE_TIME = 7                  # Cycle time in seconds
+RADIUS_CAMERA_VISION = 417.777/2
+EARTH_RADIUS = 6371
 
 # Latest TLE data for ISS location
 name = 'ISS (ZARYA)'
-l1   = '1 25544U 98067A   20016.35580316  .00000752  00000-0  21465-4 0  9996'
-l2   = '2 25544  51.6452  24.6741 0004961 136.6310 355.9024 15.49566400208322'
+l1   = '1 25544U 98067A   21036.54866870  .00000473  00000-0  16759-4 0  9992'
+l2   = '2 25544  51.6462 273.8205 0002445 338.1220  96.7186 15.48939397268198'
 iss  = ephem.readtle(name, l1, l2)
 
 # Connect to the Sense Hat
@@ -82,12 +62,23 @@ rawCapture = PiRGBArray(cam, size = CAM_RESOLUTION)
 
 # FUNCTIONS
 #--------------------------------
+def isInCamera(issPos, cityPos):
+        lat_alfa = math.pi * issPos[0] / 180;
+        lat_beta = math.pi * cityPos[0] / 180;
+        lon_alfa = math.pi * issPos[1] / 180;
+        lon_beta = math.pi * cityPos[1] / 180;
+        fi = abs(lon_alfa - lon_beta)
+        p = math.acos(math.sin(lat_beta) * math.sin(lat_alfa) + 
+               math.cos(lat_beta) * math.cos(lat_alfa) * math.cos(fi))
+        distance = p * EARTH_RADIUS
+        return distance <= RADIUS_CAMERA_VISION
+
 def get_latlon():
     iss.compute()
     return (iss.sublat/ephem.degree, iss.sublong/ephem.degree)
 
 def getMagnetometer():
-    magnetometer_values = sensor.get_compass_raw()
+    magnetometer_values = sh.get_compass_raw()
     mag_x, mag_y, mag_z = magnetometer_values['x'], magnetometer_values['y'], magnetometer_values['z']
     return {'x' : mag_x, 'y' : mag_y, 'z' : mag_z}
 
@@ -229,6 +220,7 @@ def run():
     
     # Counter to store the number of saved photos
     photo_counter = 1
+    secondary_photo_counter = 1
 
     info_logger.info('Starting the experiment')
 
@@ -236,7 +228,12 @@ def run():
     X_data = np.empty((0,11), float)
 
     try:
-        os.mkdir("photo_ndvi")
+        os.mkdir("ndvi_photos")
+    except Exception:
+        pass
+    
+    try:
+        os.mkdir("secondary_photos")
     except Exception:
         pass
 
@@ -245,41 +242,54 @@ def run():
         try:
             
             pos = get_latlon()
-	    location = rg.search(pos)
+            location = rg.search(pos)
 
             # Take a pic
             cam.capture(rawCapture, format='bgr')
 
             # Save the pic in array like format in order to check if it is day
             img = rawCapture.array
+            accellerometer = sh.get_accelerometer()
+            
+            mag = getMagnetometer()
 
-            magnetometer_values = getMagnetometer()
-
-            # Check if it's day
-            take_pic = is_day(image, size_percentage=SIZE_PERCENTAGE, min_threshold=MIN_GREY_COLOR_VALUE)
-	    if takepic:
-		for city in location:
-			takepic = takepic or isInCamera(pos,(float(city['lat']),float(city['lon'])))
-
-            if takepic:
-		ndvi = calculateNDVI(img)
+            
+            inCam = False
+            for city in location:
+                inCam = inCam or isInCamera(pos,(float(city['lat']),float(city['lon'])))
+            take_pic = is_day(img, size_percentage=SIZE_PERCENTAGE, min_threshold=MIN_GREY_COLOR_VALUE)
+            
+            if take_pic:
+                ndvi = calculateNDVI(img)
                 ndvi_stats = calculate_statistics(ndvi)
-                cv.imwrite(file_name,ndvi)
-		file_name = dir_path + "/foto_ndvi/img_" + str(photo_counter).zfill(3) + ".jpg"
-		info_logger.info('Saved photos: %s', photo_counter)
-		data_logger.info('%s, %s, %f, %f, %s, %s, %s, %s, %s, %s', photo_counter, ','.join([str(round(v, 4)) for v in ndvi_stats.values()]), pos[0],pos[1], mag['x'], mag['y'], mag['z'][:-1],acc['x'],acc['y'],acc['z'])
-		photo_counter += 1
+                
+                if inCam:
+                    file_name = dir_path + "/ndvi_photos/img_" + str(photo_counter).zfill(3) + ".jpg"
+                    data_logger.info('%s, %s, %f, %f, %s, %s, %s, %s, %s, %s', photo_counter, ','.join([str(round(v, 4)) for v in ndvi_stats.values()]), pos[0],pos[1], mag['x'], mag['y'], mag['z'],accellerometer['roll'],accellerometer['pitch'],accellerometer['yaw'])
+                    info_logger.info('Saved ndvi photos: %s', secondary_photo_counter)
+                    photo_counter += 1
+                else:
+                    file_name = dir_path + "/secondary_photos/img_" + str(secondary_photo_counter).zfill(3) + ".jpg"
+                    data_logger.info('%s, %s, %s, %s, %s, %s, %s, %s, %s, %s',secondary_photo_counter, ','.join([str(round(v, 4)) for v in ndvi_stats.values()]),pos[0], pos[1], mag['x'], mag['y'], mag['z'],accellerometer['roll'],accellerometer['pitch'],accellerometer['yaw'])
+                    info_logger.info('Saved secondary photos: %s', photo_counter)
+                    secondary_photo_counter += 1
+                cv.imwrite(file_name,ndvi)                               
             else:
-		data_logger.info('-1, -,-,-,-,-,-,-,-,-,-, %f, %f, %s, %s, %s, %s, %s, %s',pos[0], pos[1] mag['x'], mag['y'], mag['z'][:-1],acc['x'],acc['y'],acc['z'])
-			
+                data_logger.info('-1, -, -, -, -, -, -, -, -, -, %f, %f, %s, %s, %s, %s, %s, %s', pos[0],pos[1], mag['x'], mag['y'], mag['z'],accellerometer['roll'],accellerometer['pitch'],accellerometer['yaw'])
+               
+            
+            for city in location:
+                data_logger.info("%s, %s, %s", city['name'],city['lat'],city['lon'])
             # It is necessary to take the next pic
             rawCapture.truncate(0)
+            
+            sleep(5)
 
             # Update the current time
             now_time = datetime.datetime.now()
 
         except Exception as e:
-            info_logger.error('An error occurred: %s', str(e))
+            raise e
 
     info_logger.info('End of the experiment')
 
