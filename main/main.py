@@ -31,6 +31,7 @@ ML_MIN_N_OF_SAMPLES = 50        # Minimun pictures number to start the machine l
 CYCLE_TIME = 7                  # Cycle time in seconds
 RADIUS_CAMERA_VISION = 417.777/2
 EARTH_RADIUS = 6371
+SLEEP_TIME = 5
 
 # Latest TLE data for ISS location
 name = 'ISS (ZARYA)'
@@ -224,72 +225,71 @@ def run():
 
     info_logger.info('Starting the experiment')
 
-    # Create an numpy array with 11 columns (11 is the number of the keys of the dictionary)
-    X_data = np.empty((0,11), float)
-
-    try:
-        os.mkdir("ndvi_photos")
-    except Exception:
-        pass
     
-    try:
-        os.mkdir("secondary_photos")
-    except Exception:
-        pass
 
     # This will loop for 178 minutes
     while (now_time < start_time + datetime.timedelta(minutes=178)):
-        try:
+        
             
-            pos = get_latlon()
-            location = rg.search(pos)
+        pos = get_latlon()
+        location = rg.search(pos)
 
+        try:
             # Take a pic
             cam.capture(rawCapture, format='bgr')
 
             # Save the pic in array like format in order to check if it is day
             img = rawCapture.array
-            accellerometer = sh.get_accelerometer()
+        except Exception as e:
+            info_logger.info(e)
+        
+        accellerometer = sh.get_accelerometer()
             
-            mag = getMagnetometer()
+        mag = getMagnetometer()
 
-            
-            inCam = False
-            for city in location:
-                inCam = inCam or isInCamera(pos,(float(city['lat']),float(city['lon'])))
-            take_pic = is_day(img, size_percentage=SIZE_PERCENTAGE, min_threshold=MIN_GREY_COLOR_VALUE)
-            
-            if take_pic:
-                ndvi = calculateNDVI(img)
-                ndvi_stats = calculate_statistics(ndvi)
+        # Check if it's day
+        citiesInPicture = []
+        inCam = False
+        for city in location:
+            if isInCamera(pos,(float(city['lat']),float(city['lon']))):
+                inCam = True
+                citiesInPicture.append(city['name'])
+        take_pic = is_day(img, size_percentage=SIZE_PERCENTAGE, min_threshold=MIN_GREY_COLOR_VALUE)
+        
+        if take_pic:
+            ndvi = calculateNDVI(img)
+            ndvi_stats = calculate_statistics(ndvi)
                 
-                if inCam:
-                    file_name = dir_path + "/ndvi_photos/img_" + str(photo_counter).zfill(3) + ".jpg"
-                    data_logger.info('%s, %s, %f, %f, %s, %s, %s, %s, %s, %s', photo_counter, ','.join([str(round(v, 4)) for v in ndvi_stats.values()]), pos[0],pos[1], mag['x'], mag['y'], mag['z'],accellerometer['roll'],accellerometer['pitch'],accellerometer['yaw'])
-                    info_logger.info('Saved ndvi photos: %s', secondary_photo_counter)
-                    photo_counter += 1
-                else:
-                    file_name = dir_path + "/secondary_photos/img_" + str(secondary_photo_counter).zfill(3) + ".jpg"
-                    data_logger.info('%s, %s, %s, %s, %s, %s, %s, %s, %s, %s',secondary_photo_counter, ','.join([str(round(v, 4)) for v in ndvi_stats.values()]),pos[0], pos[1], mag['x'], mag['y'], mag['z'],accellerometer['roll'],accellerometer['pitch'],accellerometer['yaw'])
-                    info_logger.info('Saved secondary photos: %s', photo_counter)
-                    secondary_photo_counter += 1
-                cv.imwrite(file_name,ndvi)                               
+            if inCam:
+                file_name = dir_path + "/img_" + str(photo_counter).zfill(3) + ".jpg"
+                data_logger.info('%s, %s, %f, %f, %s, %s, %s, %s, %s, %s', photo_counter, ','.join([str(round(v, 4)) for v in ndvi_stats.values()]), pos[0],pos[1], mag['x'], mag['y'], mag['z'],accellerometer['roll'],accellerometer['pitch'],accellerometer['yaw'])
+                info_logger.info('Saved ndvi photos: %s', photo_counter)
+                photo_counter += 1
             else:
-                data_logger.info('-1, -, -, -, -, -, -, -, -, -, %f, %f, %s, %s, %s, %s, %s, %s', pos[0],pos[1], mag['x'], mag['y'], mag['z'],accellerometer['roll'],accellerometer['pitch'],accellerometer['yaw'])
+                file_name = dir_path + "/secondary_img_" + str(photo_counter).zfill(3) + ".jpg"
+                data_logger.info('%s, %s, %s, %s, %s, %s, %s, %s, %s, %s',secondary_photo_counter, ','.join([str(round(v, 4)) for v in ndvi_stats.values()]),pos[0], pos[1], mag['x'], mag['y'], mag['z'],accellerometer['roll'],accellerometer['pitch'],accellerometer['yaw'])
+                info_logger.info('Saved secondary photos: %s', secondary_photo_counter)
+                secondary_photo_counter += 1
+            cv.imwrite(file_name,img)                               
+        else:
+            data_logger.info('-1, -, -, -, -, -, -, -, -, -, %f, %f, %s, %s, %s, %s, %s, %s', pos[0],pos[1], mag['x'], mag['y'], mag['z'],accellerometer['roll'],accellerometer['pitch'],accellerometer['yaw'])
                
             
-            for city in location:
-                data_logger.info("%s, %s, %s", city['name'],city['lat'],city['lon'])
-            # It is necessary to take the next pic
-            rawCapture.truncate(0)
+        for city in location:
+            if city['name'] in citiesInPicture:
+                data_logger.info("%s, %s, %s, %s", photo_counter, city['name'],city['lat'],city['lon'])
+            else:
+                data_logger.info("%s, %s, %s, %s", secondary_photo_counter, city['name'],city['lat'],city['lon'])
+        # It is necessary to take the next pic
+        rawCapture.truncate(0)
             
-            sleep(5)
+        sleep(SLEEP_TIME)
 
+        try:
             # Update the current time
             now_time = datetime.datetime.now()
-
         except Exception as e:
-            raise e
+            info_logger.info(e)
 
     info_logger.info('End of the experiment')
 
