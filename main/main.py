@@ -266,7 +266,7 @@ def run():
                 info_logger.info('Saved ndvi photos: %s', photo_counter)
                 photo_counter += 1
             else:
-                file_name = dir_path + "/secondary_img_" + str(photo_counter).zfill(3) + ".jpg"
+                file_name = dir_path + "/secondary_img_" + str(secondary_photo_counter).zfill(3) + ".jpg"
                 data_logger.info('%s, %s, %s, %s, %s, %s, %s, %s, %s, %s',secondary_photo_counter, ','.join([str(round(v, 4)) for v in ndvi_stats.values()]),pos[0], pos[1], mag['x'], mag['y'], mag['z'],accellerometer['roll'],accellerometer['pitch'],accellerometer['yaw'])
                 info_logger.info('Saved secondary photos: %s', secondary_photo_counter)
                 secondary_photo_counter += 1
