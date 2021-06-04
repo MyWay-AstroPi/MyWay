@@ -1,5 +1,9 @@
 #(lat, long)
 
+
+lstNameRoutes=["blackBelliedPlover_19 ","blackBelliedPlover_20 ","blackBelliedPlover_7 ","blackBelliedPlover_8 ","longBilledCurlew_141772 ","longBilledCurlew_141773 ","longBilledCurlew_154067 ","longBilledCurlew_154069 ","longBilledCurlew_154072 ","longBilledCurlew_154074 ","pacificLoon_alpine01 ","pacificLoon_alpine03 ","pacificLoon_YK03 ","pacificLoon_YK08 ","swainsonHawk_SW16 ","swainsonHawk_SW17 ","swainsonHawk_SW18"]
+
+
 blackBelliedPlover_19 = [( 64.8656 ,  -166.3118 ),
                         ( 61.5315 ,  -165.8253 ),
                         ( 61.5309 ,  -165.7698 ),
