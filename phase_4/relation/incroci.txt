@@ -1,0 +1,27 @@
+
+cross point
+----------------------------
+[('pacificLoon_YK08 ', (43.545144, -125.009046))] useless(ocean)
+[('blackBelliedPlover_7 ', (48.82905, -109.744741))]Saskatchewan
+[('pacificLoon_YK08 ', (50.05956, -127.479675))] near to thomas island, also "near" to Checleset Bay Ecological Reserve and Big Bunsby Marine Provincial Park
+[('blackBelliedPlover_7 ', (51.624021, -109.031204)), ('blackBelliedPlover_8 ', (51.624021, -109.031204)), ('longBilledCurlew_154067 ', (51.624021, -109.031204)), ('longBilledCurlew_154069 ', (51.624021, -109.031204))] Saskatchewan
+
+----------------------------
+University of Saskatchewan: 
+
+“Studies on the risks of neonicotinoids have often focused on bees that have been experiencing population declines. However, it is not just bees that are being affected by these
+ insecticides,” said Christy Morrissey, U of S biology professor.
+
+Research led by Margaret Eng, a post-doctoral fellow in Morrissey’s lab, is the first study to show that imidacloprid (neonicotinoid) and chlorpyrifos (organophosphate) —two of 
+the most widely used insecticides worldwide—are directly toxic to seed-eating songbirds.
+The paper, published in Scientific Reports, shows these chemicals can directly affect songbird migration.
+
+
+“These chemicals are having a strong impact on songbirds.
+We are seeing significant weight loss and the birds’ migratory orientation being significantly altered,” 
+said Eng, who also worked with colleagues from York University. “Effects were seen from eating the equivalent of just 
+three to four imidacloprid treated canola seeds or eight chlorpyrifos granules a day for three days.”
+
+https://news.usask.ca/media-release-pages/2017/u-of-s-research-reveals-controversial-insecticides-are-toxic-to-songbirds.php
+
+
